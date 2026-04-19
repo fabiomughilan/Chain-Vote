@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bharat Chain Vote 🇮🇳 — Blockchain Voting System</title>
+  <meta name="description" content="Indian Election Commission-compliant decentralized blockchain voting on Sonic EVM. Fixes real Indian electoral flaws with cryptographic transparency." />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=Noto+Sans+Devanagari:wght@400;600&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.4/dist/ethers.umd.min.js"></script>
+</head>
+<body>
+
+  <!-- ═══ VVPAT RECEIPT OVERLAY ═══ -->
+  <div id="vvpat-overlay" class="overlay hidden">
+    <div class="vvpat-modal">
+      <div class="vvpat-header">
+        <div class="ashoka-small">☸</div>
+        <h2>मतदान पर्ची / VVPAT Receipt</h2>
+        <p class="vvpat-subtitle">Voter Verifiable Paper Audit Trail</p>
+      </div>
+      <div class="vvpat-body">
+        <div class="vvpat-seal">🇮🇳 ELECTION COMMISSION OF INDIA 🇮🇳</div>
+        <div class="vvpat-row">
+          <span class="vvpat-label">Candidate</span>
+          <span id="vvpat-candidate" class="vvpat-value"></span>
+        </div>
+        <div class="vvpat-row">
+          <span class="vvpat-label">Party</span>
+          <span id="vvpat-party" class="vvpat-value"></span>
+        </div>
+        <div class="vvpat-row">
+          <span class="vvpat-label">Constituency</span>
+          <span id="vvpat-constituency" class="vvpat-value"></span>
+        </div>
+        <div class="vvpat-row">
+          <span class="vvpat-label">Block/Tx Hash</span>
+          <span id="vvpat-tx" class="vvpat-hash mono"></span>
+        </div>
+        <div class="vvpat-row">
+          <span class="vvpat-label">VVPAT Receipt</span>
+          <span id="vvpat-hash" class="vvpat-hash mono"></span>
+        </div>
+        <div class="vvpat-row">
+          <span class="vvpat-label">Timestamp</span>
+          <span id="vvpat-time" class="vvpat-value"></span>
+        </div>
+        <div id="vvpat-explorer-link" class="vvpat-explorer hidden">
+          <a id="vvpat-sonicscan" href="#" target="_blank">🔍 Verify on SonicScan →</a>
+        </div>
+        <div class="vvpat-verified">✅ Vote Recorded on Blockchain — Immutable & Tamper-Proof</div>
+      </div>
+      <button class="btn btn-primary" onclick="closeVVPAT()">Close Receipt</button>
+    </div>
+  </div>
+
+  <!-- ═══ NETWORK SWITCHER OVERLAY ═══ -->
+  <div id="network-overlay" class="overlay hidden">
+    <div class="network-modal">
+      <div class="network-icon">🔗</div>
+      <h2>Switch to Sonic Testnet</h2>
+      <p>MetaMask needs to connect to Sonic Testnet to vote on-chain.</p>
+      <div class="network-details">
+        <div class="net-row"><span>Network</span><span class="mono">Sonic Testnet</span></div>
+        <div class="net-row"><span>Chain ID</span><span class="mono">14601</span></div>
+        <div class="net-row"><span>Currency</span><span class="mono">S (Sonic)</span></div>
+        <div class="net-row"><span>Explorer</span><span class="mono">testnet.sonicscan.org</span></div>
+      </div>
+      <button class="btn btn-primary" onclick="addSonicNetwork()">Add & Switch Network</button>
+      <button class="btn btn-ghost" onclick="document.getElementById('network-overlay').classList.add('hidden')">Cancel</button>
+    </div>
+  </div>
+
+  <!-- ═══ HEADER ═══ -->
+  <header class="header">
+    <div class="logo">
+      <span class="ashoka-spin">☸</span>
+      <div class="logo-text-wrap">
+        <span class="logo-text">भारत Chain <span class="accent">Vote</span></span>
+        <span class="logo-sub">Blockchain Voting — Sonic EVM</span>
+      </div>
+    </div>
+    <nav class="nav-links">
+      <a href="#register-section" class="nav-link">Register</a>
+      <a href="#vote-section" class="nav-link">Vote</a>
+      <a href="#explorer-section" class="nav-link">Explorer</a>
+      <a href="#results-section" class="nav-link">Results</a>
+    </nav>
+    <div class="header-right">
+      <div id="mode-badge" class="mode-badge demo">🎮 Demo</div>
+      <button id="wallet-btn" class="btn btn-wallet" onclick="connectWallet()">
+        <span class="wallet-icon">🦊</span> Connect Wallet
+      </button>
+    </div>
+  </header>
+
+  <!-- ═══ TRICOLOUR BAR ═══ -->
+  <div class="tricolour-bar">
+    <div class="tc-saffron"></div>
+    <div class="tc-white"><span class="ashoka-micro">☸</span></div>
+    <div class="tc-green"></div>
+  </div>
+
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-content">
+      <div class="eci-badge">☸ Election Commission of India — Blockchain Initiative</div>
+      <h1 class="hero-title">
+        <span class="devanagari">भारत</span> Chain <span class="accent">Vote</span>
+      </h1>
+      <p class="hero-sub">India's electoral flaws — <strong>solved forever</strong> on an immutable blockchain.</p>
+      <div class="flaw-fixes">
+        <div class="fix-pill">✅ No Voter Fraud</div>
+        <div class="fix-pill">✅ VVPAT for Every Vote</div>
+        <div class="fix-pill">✅ NOTA Included</div>
+        <div class="fix-pill">✅ Instant Transparent Counting</div>
+        <div class="fix-pill">✅ No Booth Capturing</div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><span id="stat-votes">0</span><span>Total Votes</span></div>
+        <div class="stat"><span>5</span><span>Constituencies</span></div>
+        <div class="stat"><span id="stat-phase">Voting Open</span><span>Phase</span></div>
+      </div>
+    </div>
+    <div class="hero-evm">
+      <div class="evm-machine">
+        <div class="evm-screen">BHARAT</div>
+        <div class="evm-screen">CHAIN</div>
+        <div class="evm-screen accent-text">VOTE ⛓️</div>
+        <div class="evm-buttons">
+          <div class="evm-btn saffron"></div>
+          <div class="evm-btn white"></div>
+          <div class="evm-btn green"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VOTER REGISTRATION ═══ -->
+  <section id="register-section" class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">📋</div>
+        <h2>Voter Registration</h2>
+        <p>Register your identity using a secure hash commitment — your raw Aadhaar never leaves your browser.</p>
+        <div class="security-note">🔐 Aadhaar & EPIC card are hashed client-side. Only the hash is stored on-chain.</div>
+      </div>
+
+      <div id="register-live-note" class="live-note hidden">
+        🔗 Live Mode: Use MetaMask to call <code>selfRegister()</code> on Sonic EVM.
+        <a href="#" id="metamask-register-link" onclick="metaMaskRegister(); return false;">Register via MetaMask →</a>
+      </div>
+
+      <div class="form-card" id="register-form">
+        <div class="form-grid">
+          <div class="input-group">
+            <label>Full Name</label>
+            <input id="reg-name" type="text" placeholder="As per Voter ID card" />
+          </div>
+          <div class="input-group">
+            <label>Last 4 digits of Aadhaar</label>
+            <input id="reg-aadhaar" type="text" maxlength="4" placeholder="XXXX" />
+            <span class="input-hint">Only last 4 digits — hashed locally for privacy</span>
+          </div>
+          <div class="input-group">
+            <label>EPIC / Voter ID Number</label>
+            <input id="reg-epic" type="text" placeholder="e.g. ABC1234567" />
+            <span class="input-hint">Electoral Photo Identity Card number</span>
+          </div>
+          <div class="input-group">
+            <label>Constituency</label>
+            <select id="reg-constituency">
+              <option value="">Select your constituency</option>
+              <option value="1">1 — Delhi Central</option>
+              <option value="2">2 — Mumbai North</option>
+              <option value="3">3 — Chennai South</option>
+              <option value="4">4 — Kolkata East</option>
+              <option value="5">5 — Bangalore Urban</option>
+            </select>
+          </div>
+        </div>
+        <div id="reg-hash-preview" class="hash-preview hidden">
+          <div class="hash-row"><span class="mono">Aadhaar Hash:</span><span id="reg-aadhaar-hash" class="mono accent"></span></div>
+          <div class="hash-row"><span class="mono">EPIC Hash:</span><span id="reg-epic-hash" class="mono accent"></span></div>
+        </div>
+        <button class="btn btn-primary btn-full" onclick="registerVoter()">
+          📋 Register on Blockchain
+        </button>
+        <div id="reg-status" class="status-msg hidden"></div>
+      </div>
+
+      <div id="voter-status-card" class="voter-status hidden">
+        <div class="voter-status-icon">✅</div>
+        <div class="voter-status-info">
+          <h3 id="voter-status-name">Registered Voter</h3>
+          <p id="voter-status-detail"></p>
+          <div class="voter-badges">
+            <span class="badge-pill saffron">🗳️ Eligible to Vote</span>
+            <span id="voter-voted-badge" class="badge-pill green hidden">✅ Vote Cast</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ VOTE SECTION ═══ -->
+  <section id="vote-section" class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">🗳️</div>
+        <h2>Cast Your Vote / मतदान करें</h2>
+        <p>Select your constituency and vote for your candidate. Your vote is immutable once confirmed.</p>
+      </div>
+
+      <div class="constituency-selector">
+        <label>Select Constituency:</label>
+        <div class="constituency-tabs" id="constituency-tabs">
+          <button class="ctab active" data-cid="1" onclick="selectConstituency(1)">Delhi Central</button>
+          <button class="ctab" data-cid="2" onclick="selectConstituency(2)">Mumbai North</button>
+          <button class="ctab" data-cid="3" onclick="selectConstituency(3)">Chennai South</button>
+          <button class="ctab" data-cid="4" onclick="selectConstituency(4)">Kolkata East</button>
+          <button class="ctab" data-cid="5" onclick="selectConstituency(5)">Bangalore Urban</button>
+        </div>
+      </div>
+
+      <div id="candidates-grid" class="candidates-grid">
+        <!-- Injected by JS -->
+      </div>
+
+      <div id="selected-info" class="selected-info hidden">
+        <span class="mono">Voting for: <strong id="selected-name"></strong> (<span id="selected-party"></span>)</span>
+      </div>
+
+      <button id="vote-btn" class="btn btn-primary btn-full" onclick="submitVote()" disabled>
+        🗳️ Submit Vote to Blockchain
+      </button>
+      <div id="vote-status" class="status-msg hidden"></div>
+    </div>
+  </section>
+
+  <!-- ═══ BLOCKCHAIN EXPLORER ═══ -->
+  <section id="explorer-section" class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">🔍</div>
+        <h2>Blockchain Explorer</h2>
+        <p>Every vote is an immutable transaction. Each entry is cryptographically linked — impossible to alter.</p>
+      </div>
+      <div class="explorer-toolbar">
+        <button class="btn btn-secondary" onclick="loadExplorer()">↻ Refresh</button>
+        <span id="explorer-count" class="block-count mono">0 votes</span>
+        <span id="explorer-mode" class="mode-tag"></span>
+      </div>
+      <div id="explorer-chain" class="chain-display">
+        <!-- blocks -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ RESULTS SECTION ═══ -->
+  <section id="results-section" class="section">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">📊</div>
+        <h2>Live Results / परिणाम</h2>
+        <p>Real-time vote tally — constituency-wise ECI result board.</p>
+      </div>
+      <div class="results-constituency-tabs" id="results-tabs">
+        <button class="rtab active" data-cid="1" onclick="loadResults(1)">Delhi Central</button>
+        <button class="rtab" data-cid="2" onclick="loadResults(2)">Mumbai North</button>
+        <button class="rtab" data-cid="3" onclick="loadResults(3)">Chennai South</button>
+        <button class="rtab" data-cid="4" onclick="loadResults(4)">Kolkata East</button>
+        <button class="rtab" data-cid="5" onclick="loadResults(5)">Bangalore Urban</button>
+      </div>
+      <div class="results-layout">
+        <div class="chart-card">
+          <canvas id="results-chart"></canvas>
+        </div>
+        <div id="results-board" class="results-board">
+          <!-- Injected by JS -->
+        </div>
+      </div>
+      <button class="btn btn-secondary" onclick="loadResults(activeResultsConstituency)">↻ Refresh Results</button>
+    </div>
+  </section>
+
+  <!-- ═══ AUDIT SECTION ═══ -->
+  <section class="section section-dark">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-icon">🔎</div>
+        <h2>Audit & Verify</h2>
+        <p>Enter any voter address or VVPAT hash to verify their vote on-chain. Full transparency — like the Right to Information Act for elections.</p>
+      </div>
+      <div class="form-card">
+        <div class="input-group">
+          <label>Voter Address / Wallet / Demo Key</label>
+          <input id="audit-key" type="text" placeholder="Enter voter key or wallet address to audit" />
+        </div>
+        <button class="btn btn-secondary" onclick="auditVoter()">🔍 Verify VVPAT Receipt</button>
+        <div id="audit-result" class="audit-result hidden"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="tricolour-bar footer-bar">
+      <div class="tc-saffron"></div>
+      <div class="tc-white"><span class="ashoka-micro">☸</span></div>
+      <div class="tc-green"></div>
+    </div>
+    <div class="footer-content">
+      <div class="footer-logo">☸ भारत Chain Vote</div>
+      <p class="footer-sub">Built on Sonic EVM · Sonic Testnet Chain ID 14601</p>
+      <p class="footer-note">Academic research project — Architecture based on decentralized Indian election paper by Sudhir Narayana. Fixes real ECI electoral flaws using Solidity smart contracts.</p>
+      <div class="footer-links">
+        <a href="https://testnet.sonicscan.org" target="_blank">SonicScan Explorer</a>
+        <a href="https://testnet.soniclabs.com" target="_blank">Get Test-S Tokens</a>
+        <a href="https://www.eci.gov.in" target="_blank">Election Commission of India</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+﻿
+
+  IndianElection ΓÇö ECI Compliance Tests
+    Phase Enforcement (Booth Capturing Prevention)
+      Γ£ö Should NOT allow voting during REGISTRATION phase
+      Γ£ö Should transition to VOTING phase when startVoting is called
+      Γ£ö Should NOT allow non-owner to start voting
+    Voter Identity (Impersonation Prevention)
+      Γ£ö Should reject duplicate Aadhaar hash registration
+      Γ£ö Should reject duplicate EPIC card hash registration
+      Γ£ö Should reject registering same address twice
+      Γ£ö Should reject unregistered voter attempting to vote
+    One-Person-One-Vote & VVPAT
+      Γ£ö Should allow registered voter to cast vote and emit VoteCast
+      Γ£ö Γ£à ONE-PERSON-ONE-VOTE: Should reject second vote from same wallet
+      Γ£ö Should reject voting for candidate in wrong constituency
+      Γ£ö Should generate and store VVPAT receipt on vote
+    NOTA (Supreme Court 2013 Mandate)
+      Γ£ö NOTA should be present in every constituency setup
+      Γ£ö Should allow voting for NOTA
+    Transparent Results (EVM Opacity Fix)
+      Γ£ö Should count votes accurately and provide verifiable results
+    Time-Locked Voting (Booth Capturing Prevention)
+      Γ£ö Should reject votes after voting period ends
+
+
+  15 passing (2s)
+

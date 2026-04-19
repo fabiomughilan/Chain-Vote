@@ -1,0 +1,63 @@
+﻿Compiled 5 Solidity files successfully (evm target: paris).
+
+
+  IndianElection ΓÇö ECI Compliance Tests
+    Phase Enforcement (Booth Capturing Prevention)
+      Γ£ö Should NOT allow voting during REGISTRATION phase
+      Γ£ö Should transition to VOTING phase when startVoting is called
+      Γ£ö Should NOT allow non-owner to start voting
+    Voter Identity (Impersonation Prevention)
+      Γ£ö Should reject duplicate Aadhaar hash registration
+      Γ£ö Should reject duplicate EPIC card hash registration
+      Γ£ö Should reject registering same address twice
+      Γ£ö Should reject unregistered voter attempting to vote
+    One-Person-One-Vote & VVPAT
+      1) Should allow registered voter to cast vote and emit VoteCast
+      2) Γ£à ONE-PERSON-ONE-VOTE: Should reject second vote from same wallet
+      3) Should reject voting for candidate in wrong constituency
+      Γ£ö Should generate and store VVPAT receipt on vote
+    NOTA (Supreme Court 2013 Mandate)
+      Γ£ö NOTA should be present in every constituency setup
+      Γ£ö Should allow voting for NOTA
+    Transparent Results (EVM Opacity Fix)
+      Γ£ö Should count votes accurately and provide verifiable results
+    Time-Locked Voting (Booth Capturing Prevention)
+      Γ£ö Should reject votes after voting period ends
+
+
+  12 passing (1s)
+  3 failing
+
+  1) IndianElection ΓÇö ECI Compliance Tests
+       One-Person-One-Vote & VVPAT
+         Should allow registered voter to cast vote and emit VoteCast:
+
+      AssertionError: Error in "VoteCast" event: Error in the 4th argument assertion: expected '0xa48d5ac1892bc571ab2aea0371a6ef2db80ΓÇª' to equal '0x00000000000000000000000000000000000ΓÇª'
+      + expected - actual
+
+      -0xa48d5ac1892bc571ab2aea0371a6ef2db80e4114c7ddac3084ccc801eca49859
+      +0x0000000000000000000000000000000000000000000000000000000000000000
+      
+      at Context.<anonymous> (test\IndianElection.test.js:96:7)
+
+  2) IndianElection ΓÇö ECI Compliance Tests
+       One-Person-One-Vote & VVPAT
+         Γ£à ONE-PERSON-ONE-VOTE: Should reject second vote from same wallet:
+     AssertionError: Expected transaction to be reverted with reason 'You have already voted ΓÇö one vote per citizen', but it reverted with reason 'You have already voted -- one vote per citizen'
+      at Context.<anonymous> (test\IndianElection.test.js:103:7)
+
+  3) IndianElection ΓÇö ECI Compliance Tests
+       One-Person-One-Vote & VVPAT
+         Should reject voting for candidate in wrong constituency:
+     Error: VM Exception while processing transaction: reverted with reason string 'Action not allowed in current election phase'
+    at IndianElection.onlyDuringPhase (contracts/IndianElection.sol:83)
+    at IndianElection.addCandidate (contracts/IndianElection.sol:182)
+    at EdrProviderWrapper.request (node_modules\hardhat\src\internal\hardhat-network\provider\provider.ts:453:41)
+    at HardhatEthersSigner.sendTransaction (node_modules\@nomicfoundation\hardhat-ethers\src\signers.ts:185:18)
+    at send (node_modules\ethers\src.ts\contract\contract.ts:313:20)
+    at Proxy.addCandidate (node_modules\ethers\src.ts\contract\contract.ts:352:16)
+    at Context.<anonymous> (test\IndianElection.test.js:110:7)
+  
+
+
+
