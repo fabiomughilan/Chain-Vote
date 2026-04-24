@@ -167,7 +167,7 @@ contract IndianElection is Ownable, ReentrancyGuard {
     }
 
     /**
-     * @notice Self-registration (demo-friendly).
+     * @notice Self-registration (internal testing).
      *         In production, this would require EC countersignature.
      */
     function selfRegister(

@@ -167,7 +167,7 @@ body {
   border-radius: 20px;
   font-family: var(--mono-font);
 }
-.mode-badge.demo { background: rgba(255,153,51,0.15); color: var(--saffron); border: 1px solid rgba(255,153,51,0.3); }
+.mode-badge.offline { background: rgba(255,153,51,0.15); color: var(--saffron); border: 1px solid rgba(255,153,51,0.3); }
 .mode-badge.live { background: rgba(19,136,8,0.15); color: var(--green-l); border: 1px solid rgba(19,136,8,0.4); }
 
 /* ── Buttons ───────────────────────────────────────────────────────────────── */

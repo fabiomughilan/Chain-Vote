@@ -58,14 +58,14 @@ if (ethers && CONTRACT_ADDRESS && CONTRACT_ADDRESS !== "0x0000000000000000000000
   }
 }
 
-// ─── DEMO MODE STATE ──────────────────────────────────────────────────────────
-const DEMO_CONSTITUENCIES = [
+// ─── OFFLINE MODE STATE ───────────────────────────────────────────────────────
+const OFFLINE_CONSTITUENCIES = [
   { id: 1, name: "Delhi Central" }, { id: 2, name: "Mumbai North" },
   { id: 3, name: "Chennai South" }, { id: 4, name: "Kolkata East" },
   { id: 5, name: "Bangalore Urban" }
 ];
 
-const DEMO_CANDIDATES = [
+const OFFLINE_CANDIDATES = [
     { id: 0,  name: "Aarav Kumar",  partyName: "Bharatiya Lok Dal",   partySymbol: "🌸", constituencyId: 1, voteCount: 0, isNOTA: false },
     { id: 1,  name: "Priya Sharma", partyName: "Indian National Front", partySymbol: "✋", constituencyId: 1, voteCount: 0, isNOTA: false },
     { id: 2,  name: "Rajan Mehta",  partyName: "Progressive Alliance", partySymbol: "🌾", constituencyId: 1, voteCount: 0, isNOTA: false },
@@ -95,14 +95,14 @@ function sha256Demo(data) {
 
 app.get("/config", (req, res) => {
   res.json({
-    mode:            isLiveMode ? "live" : "demo",
+    mode:            isLiveMode ? "live" : "offline",
     contractAddress: CONTRACT_ADDRESS || null,
     abi:             ELECTION_ABI,
     network: {
       chainId: 14601, name: "Sonic Testnet", rpcUrl: RPC_URL,
       explorerUrl: "https://testnet.sonicscan.org", currencySymbol: "S"
     },
-    constituencies: DEMO_CONSTITUENCIES,
+    constituencies: OFFLINE_CONSTITUENCIES,
   });
 });
 
@@ -115,7 +115,7 @@ app.get("/status", async (req, res) => {
         voteStart: Number(status.voteStart), voteEnd: Number(status.voteEnd), currentTime: Number(status.currentTime), totalVotes: Number(status.totalVotes)
       });
     }
-    const totalVotes = DEMO_CANDIDATES.reduce((s, c) => s + c.voteCount, 0);
+    const totalVotes = OFFLINE_CANDIDATES.reduce((s, c) => s + c.voteCount, 0);
     res.json({ phase: 1, phaseLabel: "Voting", voteStart: 0, voteEnd: 0, currentTime: Date.now()/1000, totalVotes });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -153,7 +153,7 @@ app.get("/candidates/:cid", async (req, res) => {
         id: Number(c.id), name: c.name, partyName: c.partyName, partySymbol: c.partySymbol, constituencyId: Number(c.constituencyId), voteCount: Number(c.voteCount), isNOTA: c.isNOTA
       }))});
     }
-    res.json({ candidates: DEMO_CANDIDATES.filter(c => c.constituencyId === cid) });
+    res.json({ candidates: OFFLINE_CANDIDATES.filter(c => c.constituencyId === cid) });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -166,7 +166,7 @@ app.get("/results/:cid", async (req, res) => {
         id: Number(c.id), name: c.name, partyName: c.partyName, partySymbol: c.partySymbol, voteCount: Number(c.voteCount), isNOTA: c.isNOTA
       }))});
     }
-    res.json({ results: DEMO_CANDIDATES.filter(c => c.constituencyId === cid).sort((a,b) => b.voteCount - a.voteCount) });
+    res.json({ results: OFFLINE_CANDIDATES.filter(c => c.constituencyId === cid).sort((a,b) => b.voteCount - a.voteCount) });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -180,7 +180,7 @@ app.get("/results", async (req, res) => {
           const raw = await contract.getConstituencyResults(c);
           results = raw.map(x => ({ id: Number(x.id), name: x.name, partyName: x.partyName, partySymbol: x.partySymbol, voteCount: Number(x.voteCount), isNOTA: x.isNOTA }));
         } else {
-          results = DEMO_CANDIDATES.filter(x => x.constituencyId === c).sort((a, b) => b.voteCount - a.voteCount);
+          results = OFFLINE_CANDIDATES.filter(x => x.constituencyId === c).sort((a, b) => b.voteCount - a.voteCount);
         }
         allResults.push({ constituencyId: c, results });
       }
@@ -200,7 +200,7 @@ app.get("/events", async (req, res) => {
       })).reverse();
       return res.json({ events, isLive: true });
     }
-    res.json({ events: demoVoteLog.slice().reverse(), isLive: false });
+    res.json({ config: { mode: isLiveMode ? "live" : "offline" }, events: demoVoteLog.slice().reverse(), isLive: false });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
@@ -224,7 +224,7 @@ app.post("/demo/vote/relayed", (req, res) => {
     const { voter, candidateId } = req.body;
     const v = demoVoters.get(voter);
     if (!v || v.hasVoted) return res.status(403).json({ error: "Invalid voter or already voted" });
-    const c = DEMO_CANDIDATES.find(x => x.id === parseInt(candidateId));
+    const c = OFFLINE_CANDIDATES.find(x => x.id === parseInt(candidateId));
     if (!c) return res.status(404).json({ error: "Candidate not found" });
     
     const vvpat = "0x" + crypto.randomBytes(32).toString("hex");
@@ -237,5 +237,5 @@ app.post("/demo/vote/relayed", (req, res) => {
 const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
   console.log(`\n🇮🇳 Bharat Chain Vote Backend Unified`);
-  console.log(`   URL: http://localhost:${PORT} | Mode: ${isLiveMode ? "LIVE" : "DEMO"}`);
+  console.log(`   URL: http://localhost:${PORT} | Mode: ${isLiveMode ? "LIVE" : "OFFLINE"}`);
 });

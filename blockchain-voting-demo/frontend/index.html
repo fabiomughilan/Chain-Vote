@@ -88,7 +88,7 @@
       <a href="#results-section" class="nav-link">Results</a>
     </nav>
     <div class="header-right">
-      <div id="mode-badge" class="mode-badge demo">🎮 Demo</div>
+      <div id="mode-badge" class="mode-badge hidden"></div>
       <button id="wallet-btn" class="btn btn-wallet" onclick="connectWallet()">
         <span class="wallet-icon">🦊</span> Connect Wallet
       </button>
@@ -296,7 +296,7 @@
       </div>
       <div class="form-card">
         <div class="input-group">
-          <label>Voter Address / Wallet / Demo Key</label>
+          <label>Voter Address / Wallet / On-chain Hash</label>
           <input id="audit-key" type="text" placeholder="Enter voter key or wallet address to audit" />
         </div>
         <button class="btn btn-secondary" onclick="auditVoter()">🔍 Verify VVPAT Receipt</button>
@@ -315,7 +315,7 @@
     <div class="footer-content">
       <div class="footer-logo">☸ भारत Chain Vote</div>
       <p class="footer-sub">Built on Sonic EVM · Sonic Testnet Chain ID 14601</p>
-      <p class="footer-note">Academic research project — Architecture based on decentralized Indian election paper by Sudhir Narayana. Fixes real ECI electoral flaws using Solidity smart contracts.</p>
+      <p class="footer-note">Secure, transparent, and decentralized voting system built for the Indian Election Commission (ECI). Implements Solidity smart contracts on the Sonic EVM.</p>
       <div class="footer-links">
         <a href="https://testnet.sonicscan.org" target="_blank">SonicScan Explorer</a>
         <a href="https://testnet.soniclabs.com" target="_blank">Get Test-S Tokens</a>

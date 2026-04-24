@@ -41,9 +41,9 @@ async function initApp() {
     appMode    = appConfig.mode;
 
     document.getElementById("mode-badge").textContent =
-      appMode === "live" ? "🔗 Live — Sonic EVM" : "🎮 Demo Mode";
+      appMode === "live" ? "🔗 Live — Sonic EVM" : "🔐 Secure Offline Mode";
     document.getElementById("mode-badge").className =
-      `mode-badge ${appMode}`;
+      `mode-badge ${appMode === "live" ? "live" : "offline"}`;
 
     if (appMode === "live") {
       document.getElementById("register-live-note").classList.remove("hidden");
@@ -83,7 +83,7 @@ async function loadStatus() {
 // ── Wallet Connection ─────────────────────────────────────────────────────────
 async function connectWallet() {
   if (!window.ethereum) {
-    showToast("MetaMask not found — running in Demo Mode", "info");
+    showToast("MetaMask not found — using secure local environment", "info");
     return;
   }
 
@@ -497,7 +497,7 @@ async function loadExplorer() {
     const { events, isLive } = await res.json();
 
     document.getElementById("explorer-count").textContent = `${events.length} votes`;
-    document.getElementById("explorer-mode").textContent  = isLive ? "🔗 Sonic EVM" : "🎮 Demo chain";
+    document.getElementById("explorer-mode").textContent  = isLive ? "🔗 Sonic EVM" : "🛡️ Local Ledger";
 
     const container = document.getElementById("explorer-chain");
     if (!events.length) {
